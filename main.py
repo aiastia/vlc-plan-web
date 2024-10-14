@@ -30,7 +30,7 @@ def control():
     
     # 请求目标计算机的 VLC 和视频路径
     try:
-        response = requests.get(f'http://{computer_ip}:5000/config')
+        response = requests.get(f'http://{computer_ip}:5001/config')
         config = response.json()
         vlc_path = config['vlc_path']
         video_path = config['video_path']
