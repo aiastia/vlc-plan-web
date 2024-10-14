@@ -9,6 +9,7 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -22,8 +23,8 @@
         }
         .controls {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
             width: 100%;
             max-width: 400px;
         }
@@ -37,8 +38,8 @@
             cursor: pointer;
             font-size: 18px;
             transition: background-color 0.3s;
-            width: 100%;
-            max-width: 300px;
+            width: calc(50% - 20px); /* Adjust width for two buttons per row */
+            box-sizing: border-box;
         }
         button:hover {
             background-color: #45a049;
@@ -55,6 +56,9 @@
                 padding: 10px 15px;
             }
         }
+        .close-button {
+            width: 100%; /* Full width for the close button */
+        }
     </style>
 </head>
 <body>
@@ -64,7 +68,7 @@
         <button onclick="sendControl('pause')">暂停</button>
         <button onclick="sendControl('forward')">快进</button>
         <button onclick="sendControl('backward')">后退</button>
-        <button onclick="sendControl('close')">关闭 VLC</button>
     </div>
+    <button class="close-button" onclick="sendControl('close')">关闭 VLC</button>
 </body>
 </html>
