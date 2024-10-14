@@ -11,18 +11,6 @@ import psutil  # 用于检查进程
 
 app = Flask(__name__)
 
-# VLC和视频路径配置
-computer_configs = {
-    "127.0.0.1": {
-        "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
-        "video_path": "C:\\Users\\qamar\\Downloads\\148597-794221559_small.mp4"
-    },
-    "192.168.0.167": {
-        "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
-        "video_path": "C:\\Users\\qamar\\Downloads\\148597-794221559_small.mp4"
-    }
-}
-
 def is_vlc_running():
     """检查是否有 VLC 进程正在运行"""
     for proc in psutil.process_iter(['name']):
@@ -36,13 +24,19 @@ def index():
 
 @app.route('/control', methods=['POST'])
 def control():
-    global vlc_process
     data = request.json
     action = data.get('action')
     computer_ip = data.get('computerIp')
-    config = computer_configs.get(computer_ip)
-    vlc_path = config['vlc_path']
-    video_path = config['video_path']
+    
+    # 请求目标计算机的 VLC 和视频路径
+    try:
+        response = requests.get(f'http://{computer_ip}:5000/config')
+        config = response.json()
+        vlc_path = config['vlc_path']
+        video_path = config['video_path']
+    except requests.RequestException as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
     print(f"Received action: {action} for computer: {computer_ip} with VLC path: {vlc_path} and video path: {video_path}")
 
     # 远程 VLC 服务器详情

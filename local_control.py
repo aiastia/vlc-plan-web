@@ -1,5 +1,5 @@
 import subprocess
-from flask import Flask, request, jsonify, requests
+from flask import Flask, request, jsonify
 import psutil
 
 app = Flask(__name__)
@@ -26,13 +26,10 @@ def control():
                 VLC_PATH, VIDEO_PATH, '--fullscreen', '--loop', '--no-video-title-show'
             ])
     elif action == 'pause':
-        # 暂停逻辑
         requests.get('http://localhost:8080/requests/status.xml?command=pl_pause', auth=('', '123'))
     elif action == 'forward':
-        # 快进逻辑
         requests.get('http://localhost:8080/requests/status.xml?command=seek&val=+10', auth=('', '123'))
     elif action == 'backward':
-        # 后退逻辑
         requests.get('http://localhost:8080/requests/status.xml?command=seek&val=-10', auth=('', '123'))
     elif action == 'close':
         for proc in psutil.process_iter(['name']):
@@ -40,6 +37,11 @@ def control():
                 proc.terminate()
 
     return jsonify({'status': 'success'})
+
+@app.route('/config', methods=['GET'])
+def config():
+    """返回 VLC 和视频路径"""
+    return jsonify({'vlc_path': VLC_PATH, 'video_path': VIDEO_PATH})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
