@@ -1,12 +1,13 @@
 import subprocess
 from flask import Flask, request, jsonify
 import psutil
+import requests
 
 app = Flask(__name__)
 
 # 计算机的VLC路径和视频路径
-VLC_PATH = "C:\\Path\\To\\VLC\\vlc.exe"  # 替换为实际的VLC路径
-VIDEO_PATH = "C:\\Path\\To\\Video\\video.mp4"  # 替换为实际的视频路径
+VLC_PATH = "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe" # 替换为实际的VLC路径
+VIDEO_PATH = "C:\\Users\\qamar\\Downloads\\148597-794221559_small.mp4"  # 替换为实际的视频路径
 
 def is_vlc_running():
     """检查是否有 VLC 进程正在运行"""
@@ -44,4 +45,4 @@ def config():
     return jsonify({'vlc_path': VLC_PATH, 'video_path': VIDEO_PATH})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
