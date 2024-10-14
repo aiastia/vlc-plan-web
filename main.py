@@ -43,32 +43,12 @@ def control():
     remote_vlc_port = 8080  # 默认 VLC Web 接口端口
     remote_vlc_password = '123'  # 替换为在 VLC 中设置的密码
 
-    if action == 'play':
-        if not is_vlc_running():
-            print("Starting VLC...")
-            subprocess.Popen([
-                vlc_path, video_path, '--fullscreen', '--loop', '--no-video-title-show',
-                '--qt-fullscreen-screennumber=0', '--no-qt-privacy-ask', '--no-qt-error-dialogs',
-                '--qt-minimal-view', '--no-qt-fs-controller'
-            ])
-        else:
-            print("VLC is already running.")
-    elif action == 'pause':
-        print("Sending pause command...")
-        requests.get(f'http://{computer_ip}:{remote_vlc_port}/requests/status.xml?command=pl_pause', auth=('', remote_vlc_password))
-    elif action == 'forward':
-        print("Sending forward command...")
-        requests.get(f'http://{computer_ip}:{remote_vlc_port}/requests/status.xml?command=seek&val=+10', auth=('', remote_vlc_password))
-    elif action == 'backward':
-        print("Sending backward command...")
-        requests.get(f'http://{computer_ip}:{remote_vlc_port}/requests/status.xml?command=seek&val=-10', auth=('', remote_vlc_password))
-    elif action == 'close':
-        print("Closing all VLC processes...")
-        for proc in psutil.process_iter(['name']):
-            if proc.info['name'] == 'vlc.exe':
-                proc.terminate()
-    
-    return jsonify({'status': 'success'})
+    # Send the control command to the remote computer
+    try:
+        remote_response = requests.post(f'http://{computer_ip}:5001/control', json={'action': action})
+        return jsonify(remote_response.json())
+    except requests.RequestException as e:
+        return jsonify({'status': 'error', 'message': str(e)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
