@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>视频控制</title>
+    <script src="/static/main.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 768px) {
+            button {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+        }
+        @media (max-width: 480px) {
+            button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>视频控制</h1>
+    <div id="control-buttons" class="controls">
+        <button onclick="sendControl('play')">播放</button>
+        <button onclick="sendControl('pause')">暂停</button>
+        <button onclick="sendControl('forward')">快进</button>
+        <button onclick="sendControl('backward')">后退</button>
+        <button onclick="sendControl('close')">关闭 VLC</button>
+    </div>
+</body>
+</html>
