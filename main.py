@@ -11,12 +11,17 @@ import psutil  # 用于检查进程
 
 app = Flask(__name__)
 
-# VLC 播放器路径
-VLC_PATH = "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe"
-VIDEO_PATH = "C:\\Users\\qamar\\Downloads\\148597-794221559_small.mp4"
-
-# 启动 VLC 播放器
-vlc_process = None
+# VLC和视频路径配置
+computer_configs = {
+    "127.0.0.1": {
+        "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
+        "video_path": "C:\\Users\\qamar\\Downloads\\148597-794221559_small.mp4"
+    },
+    "192.168.0.167": {
+        "vlc_path": "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
+        "video_path": "C:\\Users\\qamar\\Downloads\\148597-794221559_small.mp4"
+    }
+}
 
 def is_vlc_running():
     """检查是否有 VLC 进程正在运行"""
@@ -32,14 +37,23 @@ def index():
 @app.route('/control', methods=['POST'])
 def control():
     global vlc_process
-    action = request.json.get('action')
-    print(f"Received action: {action}")  # 添加调试信息
-    
+    data = request.json
+    action = data.get('action')
+    computer_ip = data.get('computerIp')
+    config = computer_configs.get(computer_ip)
+    vlc_path = config['vlc_path']
+    video_path = config['video_path']
+    print(f"Received action: {action} for computer: {computer_ip} with VLC path: {vlc_path} and video path: {video_path}")
+
+    # 远程 VLC 服务器详情
+    remote_vlc_port = 8080  # 默认 VLC Web 接口端口
+    remote_vlc_password = '123'  # 替换为在 VLC 中设置的密码
+
     if action == 'play':
         if not is_vlc_running():
             print("Starting VLC...")
-            vlc_process = subprocess.Popen([
-                VLC_PATH, VIDEO_PATH, '--fullscreen', '--loop', '--no-video-title-show',
+            subprocess.Popen([
+                vlc_path, video_path, '--fullscreen', '--loop', '--no-video-title-show',
                 '--qt-fullscreen-screennumber=0', '--no-qt-privacy-ask', '--no-qt-error-dialogs',
                 '--qt-minimal-view', '--no-qt-fs-controller'
             ])
@@ -47,13 +61,13 @@ def control():
             print("VLC is already running.")
     elif action == 'pause':
         print("Sending pause command...")
-        requests.get('http://localhost:8080/requests/status.xml?command=pl_pause', auth=('', '123'))
+        requests.get(f'http://{computer_ip}:{remote_vlc_port}/requests/status.xml?command=pl_pause', auth=('', remote_vlc_password))
     elif action == 'forward':
         print("Sending forward command...")
-        requests.get('http://localhost:8080/requests/status.xml?command=seek&val=+10', auth=('', '123'))
+        requests.get(f'http://{computer_ip}:{remote_vlc_port}/requests/status.xml?command=seek&val=+10', auth=('', remote_vlc_password))
     elif action == 'backward':
         print("Sending backward command...")
-        requests.get('http://localhost:8080/requests/status.xml?command=seek&val=-10', auth=('', '123'))
+        requests.get(f'http://{computer_ip}:{remote_vlc_port}/requests/status.xml?command=seek&val=-10', auth=('', remote_vlc_password))
     elif action == 'close':
         print("Closing all VLC processes...")
         for proc in psutil.process_iter(['name']):

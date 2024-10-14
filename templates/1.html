@@ -63,6 +63,11 @@
 </head>
 <body>
     <h1>视频控制</h1>
+    <select id="computer-select">
+        <option value="127.0.0.1">电脑1</option>
+        <option value="192.168.0.167">电脑2</option>
+        <!-- 添加更多选项以匹配其他计算机的 IP 地址 -->
+    </select>
     <div id="control-buttons" class="controls">
         <button onclick="sendControl('play')">播放</button>
         <button onclick="sendControl('pause')">暂停</button>
@@ -70,5 +75,18 @@
         <button onclick="sendControl('backward')">后退</button>
     </div>
     <button class="close-button" onclick="sendControl('close')">关闭 VLC</button>
+    <script>
+        function sendControl(action) {
+            const computerIp = document.getElementById('computer-select').value;
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action, computerIp })
+            }).then(response => response.json())
+              .then(data => console.log(data));
+        }
+    </script>
 </body>
 </html>
